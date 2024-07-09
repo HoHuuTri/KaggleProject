@@ -16,7 +16,9 @@ y = data["SalePrice"]
 y.info()
 # %% Check For Abnormal data
 
-#tada
+
+#im testing how to merge github
+
 
 # %% Clean Data
 def CleanData(data):
