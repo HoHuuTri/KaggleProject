@@ -16,6 +16,8 @@ y = data["SalePrice"]
 y.info()
 # %% Check For Abnormal data
 
+#tada
+
 # %% Clean Data
 def CleanData(data):
     data = data[["YearBuilt","OverallQual","OverallCond","1stFlrSF","2ndFlrSF","MSZoning","LotArea"
