@@ -72,15 +72,12 @@ def Catagory_onehot_multcols(multcolums,df):
 # %%
 Catagory_onehot_multcols(collums , X)
 Catagory_onehot_multcols(collums,test_data)
-print(X["MSZoning"].head())
 # %% Split Training and Test (80/20)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
 # %% Training Random Forest Regressor
-RFG = RandomForestRegressor(n_estimators = 8, random_state = 0) # Change n_estimators to fit the model.
-RFG.fit(X_train, y_train)
-y_pred = RFG.predict(X_test)
-r2_score(y_test, y_pred)
+RFG = RandomForestRegressor(n_estimators = 8) # Change n_estimators to fit the model.
+RFG.fit(X, y)
 
 # %% Training Multiple Linear Regression 
 MLR = LinearRegression()
