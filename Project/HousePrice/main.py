@@ -12,109 +12,114 @@ from sklearn.metrics import r2_score
 import seaborn as sns
 # %% Read input and split Inde and De
 data = pd.read_csv("train.csv")
-x = data.drop("SalePrice" , axis= "columns")
+X = data
 y = data["SalePrice"]
 y.info()
-test_data = pd.read_csv("test.csv")
+test = pd.read_csv("test.csv")
 test2 = pd.read_csv("test.csv")
-data = pd.read_csv("train.csv")
-x = data.drop("SalePrice" , axis= "columns")
-y = data["SalePrice"]
-y.info()
-def CleanData(df):
-    df['LotFrontage'] = df['LotFrontage'].fillna(df["LotFrontage"].mean())
-    df.drop(["Alley","MasVnrType","MiscFeature","PoolQC","Fence","FireplaceQu","Id"] , inplace = True , axis= 1)
-    df["MasVnrArea"] = df["MasVnrArea"].fillna(df["MasVnrArea"].mean())
-    df["BsmtExposure"] = df["BsmtExposure"].fillna(df["BsmtExposure"].mode()[0])
-    df["BsmtFinType2"] = df["BsmtFinType2"].fillna(df["BsmtFinType2"].mode()[0])
-    df["BsmtExposure"] = df["BsmtExposure"].fillna(df["BsmtExposure"].mode()[0])
-    df["BsmtFinType1"] = df["BsmtFinType1"].fillna(df["BsmtFinType1"].mode()[0])
-    df["BsmtQual"] = df["BsmtQual"].fillna(df["BsmtQual"].mode()[0])
-    df["BsmtCond"] = df["BsmtCond"].fillna(df["BsmtCond"].mode()[0])
-    df["Electrical"] = df["Electrical"].fillna(df["Electrical"].mode()[0])
-    df["GarageFinish"] = df["GarageFinish"].fillna(df["GarageFinish"].mode()[0])
-    df["GarageType"] = df["GarageType"].fillna(df["GarageType"].mode()[0])
-    df["GarageQual"] = df["GarageQual"].fillna(df["GarageQual"].mode()[0])
-    df["GarageCond"] = df["GarageCond"].fillna(df["GarageCond"].mode()[0])
-    df["GarageYrBlt"] = df["GarageYrBlt"].fillna(df["GarageYrBlt"].mean())
-    df["MSZoning"] = df["MSZoning"].fillna(df["MSZoning"].mode()[0])
-    df["Utilities"] = df["Utilities"].fillna(df["Utilities"].mode()[0])
-    df["GarageCars"] = df["GarageCars"].fillna(df["GarageCars"].mean())
-    df["GarageArea"] = df["GarageArea"].fillna(df["GarageArea"].mean())
-    df["BsmtFinSF1"] = df["BsmtFinSF1"].fillna(df["BsmtFinSF1"].mean())
-    df["BsmtFinSF2"] = df["BsmtFinSF2"].fillna(df["BsmtFinSF2"].mean())
-    df["BsmtUnfSF"] = df["BsmtUnfSF"].fillna(df["BsmtUnfSF"].mean())
-    df["TotalBsmtSF"] = df["TotalBsmtSF"].fillna(df["TotalBsmtSF"].mean())
-    df["BsmtFullBath"] = df["BsmtFullBath"].fillna(df["BsmtFullBath"].mean())
-    df["BsmtHalfBath"] = df["BsmtHalfBath"].fillna(df["BsmtHalfBath"].mean())
-    return df 
-X = CleanData(x)
-test_data = CleanData(test_data)
 
-collums = ["MSZoning","Street","LotShape","LandContour","Utilities","LotConfig","LandSlope",'Neighborhood',"Condition1"
-           ,"Condition2","BldgType","HouseStyle","RoofStyle","RoofMatl","Exterior1st","Exterior2nd","ExterQual"
-           ,"ExterCond","Foundation","BsmtQual","BsmtCond","BsmtExposure","BsmtFinType1","BsmtFinType2","Heating"
-           ,"HeatingQC","CentralAir","Electrical","KitchenQual","Functional","GarageType","GarageFinish","GarageQual"
-           ,"GarageCond","PavedDrive","SaleType","SaleCondition"]
+# %% Handling train data
+X['LotFrontage']=X['LotFrontage'].fillna(X['LotFrontage'].mean())
+X.drop(['Alley'],axis=1,inplace=True)
+X['FireplaceQu']=X['FireplaceQu'].fillna(X['FireplaceQu'].mode()[0])
+X['GarageType']=X['GarageType'].fillna(X['GarageType'].mode()[0])
+X.drop(['GarageYrBlt'],axis=1,inplace=True)
+X['GarageFinish']=X['GarageFinish'].fillna(X['GarageFinish'].mode()[0])
+X['GarageQual']=X['GarageQual'].fillna(X['GarageQual'].mode()[0])
+X['GarageCond']=X['GarageCond'].fillna(X['GarageCond'].mode()[0])
+X.drop(['PoolQC','Fence','MiscFeature'],axis=1,inplace=True)
+X.drop(['Id'],axis=1,inplace=True)
+X['MasVnrType']=X['MasVnrType'].fillna(X['MasVnrType'].mode()[0])
+X['MasVnrArea']=X['MasVnrArea'].fillna(X['MasVnrArea'].mode()[0])
+X['BsmtExposure']=X['BsmtExposure'].fillna(X['BsmtExposure'].mode()[0])
+X['BsmtFinType2']=X['BsmtFinType2'].fillna(X['BsmtFinType2'].mode()[0])
+X.dropna(inplace=True)
 
-def Catagory_onehot_multcols(multcolums,df):
-    df_final=df 
-    i=0 
-    for fields in multcolums:
-        df1 = pd.get_dummies(df[fields],drop_first=True)
-        df.drop([fields],axis = 1 , inplace = True)
-        if i ==0:
-            df_final = df1.copy()
+#%% Handing test data
+
+test['LotFrontage']=test['LotFrontage'].fillna(test['LotFrontage'].mean())
+test['MSZoning']=test['MSZoning'].fillna(test['MSZoning'].mode()[0])
+test.drop(['Alley'],axis=1,inplace=True)
+test['BsmtCond']=test['BsmtCond'].fillna(test['BsmtCond'].mode()[0])
+test['BsmtQual']=test['BsmtQual'].fillna(test['BsmtQual'].mode()[0])
+test['FireplaceQu']=test['FireplaceQu'].fillna(test['FireplaceQu'].mode()[0])
+test['GarageType']=test['GarageType'].fillna(test['GarageType'].mode()[0])
+test.drop(['GarageYrBlt'],axis=1,inplace=True)
+test['GarageFinish']=test['GarageFinish'].fillna(test['GarageFinish'].mode()[0])
+test['GarageQual']=test['GarageQual'].fillna(test['GarageQual'].mode()[0])
+test['GarageCond']=test['GarageCond'].fillna(test['GarageCond'].mode()[0])
+
+test.drop(['PoolQC','Fence','MiscFeature'],axis=1,inplace=True)
+test.drop(['Id'],axis=1,inplace=True)
+test['MasVnrType']=test['MasVnrType'].fillna(test['MasVnrType'].mode()[0])
+test['MasVnrArea']=test['MasVnrArea'].fillna(test['MasVnrArea'].mode()[0])
+test['BsmtExposure']=test['BsmtExposure'].fillna(test['BsmtExposure'].mode()[0])
+test['BsmtFinType2']=test['BsmtFinType2'].fillna(test['BsmtFinType2'].mode()[0])
+test['Utilities']=test['Utilities'].fillna(test['Utilities'].mode()[0])
+test['Exterior1st']=test['Exterior1st'].fillna(test['Exterior1st'].mode()[0])
+test['Exterior2nd']=test['Exterior2nd'].fillna(test['Exterior2nd'].mode()[0])
+test['BsmtFinType1']=test['BsmtFinType1'].fillna(test['BsmtFinType1'].mode()[0])
+test['BsmtFinSF1']=test['BsmtFinSF1'].fillna(test['BsmtFinSF1'].mean())
+test['BsmtFinSF2']=test['BsmtFinSF2'].fillna(test['BsmtFinSF2'].mean())
+test['BsmtUnfSF']=test['BsmtUnfSF'].fillna(test['BsmtUnfSF'].mean())
+test['TotalBsmtSF']=test['TotalBsmtSF'].fillna(test['TotalBsmtSF'].mean())
+test['BsmtFullBath']=test['BsmtFullBath'].fillna(test['BsmtFullBath'].mode()[0])
+test['BsmtHalfBath']=test['BsmtHalfBath'].fillna(test['BsmtHalfBath'].mode()[0])
+test['KitchenQual']=test['KitchenQual'].fillna(test['KitchenQual'].mode()[0])
+test['Functional']=test['Functional'].fillna(test['Functional'].mode()[0])
+test['GarageCars']=test['GarageCars'].fillna(test['GarageCars'].mean())
+test['GarageArea']=test['GarageArea'].fillna(test['GarageArea'].mean())
+test['SaleType']=test['SaleType'].fillna(test['SaleType'].mode()[0])
+test.to_csv('formulatedtest.csv',index=False)
+
+#%% Combine
+
+columns=['MSZoning','Street','LotShape','LandContour','Utilities','LotConfig','LandSlope','Neighborhood',
+         'Condition2','BldgType','Condition1','HouseStyle','SaleType',
+        'SaleCondition','ExterCond',
+         'ExterQual','Foundation','BsmtQual','BsmtCond','BsmtExposure','BsmtFinType1','BsmtFinType2',
+        'RoofStyle','RoofMatl','Exterior1st','Exterior2nd','MasVnrType','Heating','HeatingQC',
+         'CentralAir',
+         'Electrical','KitchenQual','Functional',
+         'FireplaceQu','GarageType','GarageFinish','GarageQual','GarageCond','PavedDrive']
+
+def category_onehot_multcols(multcolumns):
+    df_final=final_df
+    i=0
+    for fields in multcolumns:
+        
+        print(fields)
+        df1=pd.get_dummies(final_df[fields],drop_first=True)
+        
+        final_df.drop([fields],axis=1,inplace=True)
+        if i==0:
+            df_final=df1.copy()
         else:
-            df_final = pd.concat([df_final,df1] , axis= 1)
-    df_final = pd.concat([df,df_final] , axis= 1) 
+            
+            df_final=pd.concat([df_final,df1],axis=1)
+        i=i+1
+       
+        
+    df_final=pd.concat([final_df,df_final],axis=1)
+        
     return df_final
-# %%
-Catagory_onehot_multcols(collums , X)
-Catagory_onehot_multcols(collums,test_data)
-# %% Split Training and Test (80/20)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+main_df=X.copy()
+test_df=pd.read_csv('formulatedtest.csv')
+final_df=pd.concat([X,test_df],axis=0)
+final_df=category_onehot_multcols(columns)
+final_df =final_df.loc[:,~final_df.columns.duplicated()]
+X_Train = final_df.iloc[:1422,:]
+X_Test = final_df.iloc[1422:,:]
+X_Test.drop(['SalePrice'],axis=1,inplace=True)
+X_train=X_Train.drop(['SalePrice'],axis=1)
+y_train = X_Train['SalePrice']
 
-# %% Training Random Forest Regressor
+# %% Training Random Forest Regressor and Output
 RFG = RandomForestRegressor(n_estimators = 8) # Change n_estimators to fit the model.
-RFG.fit(X, y)
-
-# %% Training Multiple Linear Regression 
-MLR = LinearRegression()
-MLR.fit(X_train, y_train)
-y_pred = MLR.predict(X_test)
-r2_score(y_test, y_pred)
-
-# %% Training Polynomial Linear Regression
-poly_reg = PolynomialFeatures(degree = 3) #Change the degree to fit the model.
-X_poly = poly_reg.fit_transform(X_train)
-PLR = LinearRegression()
-PLR.fit(X_poly, y_train)
-y_pred = PLR.predict(poly_reg.transform(X_test))
-r2_score(y_test, y_pred)
-
-# %% Feature Scaling
-y_train = np.array(y_train)
-y_train = y_train.reshape(len(y_train) , 1) 
-sc_X = StandardScaler()
-sc_y = StandardScaler()
-X_train = sc_X.fit_transform(X_train)
-y_train = sc_y.fit_transform(y_train)
-
-# %% Training SVR 
-regressor = SVR(kernel='rbf')
-regressor.fit(X_train, y_train)
-y_pred = sc_y.inverse_transform(regressor.predict(sc_X.transform(X_test)).reshape(-1, 1))
-r2_score(y_test, y_pred)
-# %% Output Our data
-Predictions = RFG.predict(test_data)
+RFG.fit(X_train, y_train)
+Predictions = RFG.predict(X_Test)
 arr = pd.DataFrame(test2["Id"] )
 Predictions = pd.DataFrame(Predictions)
 arr["SalePrice"] = Predictions
 arr.to_csv("submission.csv" , index= False)
-
-# %% Test data oni chan?
-X_train.shape
-IsNull = test_data.isnull().sum()
-sns.heatmap(test_data.isnull() , yticklabels=False, cbar=False)
-test_data.info()
+# %%
