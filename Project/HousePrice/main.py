@@ -1,7 +1,6 @@
 #%% Import 
 import numpy as np
 import pandas as pd 
-import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
@@ -10,8 +9,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.svm import SVR
 from sklearn.metrics import r2_score
-
-# %% Clean Data
+import seaborn as sns
+# %% Read input and split Inde and De
+data = pd.read_csv("train.csv")
+x = data.drop("SalePrice" , axis= "columns")
+y = data["SalePrice"]
+y.info()
+test_data = pd.read_csv("test.csv")
+test2 = pd.read_csv("test.csv")
 data = pd.read_csv("train.csv")
 x = data.drop("SalePrice" , axis= "columns")
 y = data["SalePrice"]
@@ -32,12 +37,20 @@ def CleanData(df):
     df["GarageQual"] = df["GarageQual"].fillna(df["GarageQual"].mode()[0])
     df["GarageCond"] = df["GarageCond"].fillna(df["GarageCond"].mode()[0])
     df["GarageYrBlt"] = df["GarageYrBlt"].fillna(df["GarageYrBlt"].mean())
+    df["MSZoning"] = df["MSZoning"].fillna(df["MSZoning"].mode()[0])
+    df["Utilities"] = df["Utilities"].fillna(df["Utilities"].mode()[0])
+    df["GarageCars"] = df["GarageCars"].fillna(df["GarageCars"].mean())
+    df["GarageArea"] = df["GarageArea"].fillna(df["GarageArea"].mean())
+    df["BsmtFinSF1"] = df["BsmtFinSF1"].fillna(df["BsmtFinSF1"].mean())
+    df["BsmtFinSF2"] = df["BsmtFinSF2"].fillna(df["BsmtFinSF2"].mean())
+    df["BsmtUnfSF"] = df["BsmtUnfSF"].fillna(df["BsmtUnfSF"].mean())
+    df["TotalBsmtSF"] = df["TotalBsmtSF"].fillna(df["TotalBsmtSF"].mean())
+    df["BsmtFullBath"] = df["BsmtFullBath"].fillna(df["BsmtFullBath"].mean())
+    df["BsmtHalfBath"] = df["BsmtHalfBath"].fillna(df["BsmtHalfBath"].mean())
     return df 
 X = CleanData(x)
+test_data = CleanData(test_data)
 
-X.head()
-
-sns.heatmap(X.isnull() , yticklabels=False, cbar=False)
 collums = ["MSZoning","Street","LotShape","LandContour","Utilities","LotConfig","LandSlope",'Neighborhood',"Condition1"
            ,"Condition2","BldgType","HouseStyle","RoofStyle","RoofMatl","Exterior1st","Exterior2nd","ExterQual"
            ,"ExterCond","Foundation","BsmtQual","BsmtCond","BsmtExposure","BsmtFinType1","BsmtFinType2","Heating"
@@ -56,20 +69,15 @@ def Catagory_onehot_multcols(multcolums,df):
             df_final = pd.concat([df_final,df1] , axis= 1)
     df_final = pd.concat([df,df_final] , axis= 1) 
     return df_final
+# %%
 Catagory_onehot_multcols(collums , X)
-X.head()
-
-#%% Check For Data
-X["GarageCond"].value_counts()
-X.info()
-
-# %% Check For Abnormal data
-
+Catagory_onehot_multcols(collums,test_data)
+print(X["MSZoning"].head())
 # %% Split Training and Test (80/20)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
 # %% Training Random Forest Regressor
-RFG = RandomForestRegressor(n_estimators = 10, random_state = 0) # Change n_estimators to fit the model.
+RFG = RandomForestRegressor(n_estimators = 8, random_state = 0) # Change n_estimators to fit the model.
 RFG.fit(X_train, y_train)
 y_pred = RFG.predict(X_test)
 r2_score(y_test, y_pred)
@@ -81,7 +89,7 @@ y_pred = MLR.predict(X_test)
 r2_score(y_test, y_pred)
 
 # %% Training Polynomial Linear Regression
-poly_reg = PolynomialFeatures(degree = 4) #Change the degree to fit the model.
+poly_reg = PolynomialFeatures(degree = 3) #Change the degree to fit the model.
 X_poly = poly_reg.fit_transform(X_train)
 PLR = LinearRegression()
 PLR.fit(X_poly, y_train)
@@ -89,6 +97,8 @@ y_pred = PLR.predict(poly_reg.transform(X_test))
 r2_score(y_test, y_pred)
 
 # %% Feature Scaling
+y_train = np.array(y_train)
+y_train = y_train.reshape(len(y_train) , 1) 
 sc_X = StandardScaler()
 sc_y = StandardScaler()
 X_train = sc_X.fit_transform(X_train)
@@ -99,3 +109,15 @@ regressor = SVR(kernel='rbf')
 regressor.fit(X_train, y_train)
 y_pred = sc_y.inverse_transform(regressor.predict(sc_X.transform(X_test)).reshape(-1, 1))
 r2_score(y_test, y_pred)
+# %% Output Our data
+Predictions = RFG.predict(test_data)
+arr = pd.DataFrame(test2["Id"] )
+Predictions = pd.DataFrame(Predictions)
+arr["SalePrice"] = Predictions
+arr.to_csv("submission.csv" , index= False)
+
+# %% Test data oni chan?
+X_train.shape
+IsNull = test_data.isnull().sum()
+sns.heatmap(test_data.isnull() , yticklabels=False, cbar=False)
+test_data.info()
