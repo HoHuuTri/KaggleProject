@@ -17,33 +17,35 @@ import seaborn as sns
 #%% Import Data
 dataset1 = pd.read_csv('student-mat.csv', delimiter = ";")
 dataset2 = pd.read_csv('student-mat.csv', delimiter = ";")
+X1 = dataset1.iloc[:, :-1].values
+y1 = dataset1[:, -1].values
+X2 = dataset1.iloc[:, :-1].values
+y2 = dataset1[:, -1].values
 
 #%% Data Preprocessing
-dataset1.drop(["G1", "G2"], axis = 1)
-dataset2.drop(["G1", "G2"], axis = 1)
+X1.drop(["G1", "G2"], axis = 1)
+X2.drop(["G1", "G2"], axis = 1)
 
 #Label Encoder
 le = LabelEncoder()
 columns1 = ["school", "sex", "address", "famsize", "Pstatus", "schoolsup", "famsup", "paid", "activities",
            "nursery", "higher", "internet", "romantic"]
 for col in columns1:
-    dataset1[col] = le.fit_transform(dataset1[col])
-    dataset2[col] = le.transform(dataset2[col])
+    X1[col] = le.fit_transform(dataset1[col])
+    X2[col] = le.transform(dataset2[col])
 
 #OneHotEncoder
 columns2 = ["Medu", "Fedu", "Mjob", "Fjob", "reason", "guardian"]
 
 ct = ColumnTransformer(transformers=[('encoder', OneHotEncoder(), columns2)], remainder='passthrough')
-dataset1 = np.array(ct.fit_transform(dataset1))
-dataset2 = np.array(ct.fit_transform(dataset2))
+X1 = np.array(ct.fit_transform(dataset1))
+X2 = np.array(ct.transform(dataset2))
 
 print(dataset1)
 
-# %%
 #%% Split data 
-X = dataset1.drop("G3")
-y = dataset1["G3"]
-x_train , y_train , x_test , y_test = train_test_split(X,y , test_size= 0.2 , random_state= 42, shuffle=True)
+x1_train , y1_train , x1_test , y1_test = train_test_split(X1,y1 , test_size= 0.2 , random_state= 42, shuffle=True)
+x2_train , y2_train , x2_test , y2_test = train_test_split(X2,y2 , test_size= 0.2 , random_state= 42, shuffle=True)
 
 #%% Random Forest
 from sklearn.ensemble import RandomForestRegressor
