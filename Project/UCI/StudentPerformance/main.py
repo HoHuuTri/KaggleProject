@@ -17,31 +17,26 @@ import seaborn as sns
 #%% Import Data
 dataset1 = pd.read_csv('student-mat.csv', delimiter = ";")
 dataset2 = pd.read_csv('student-mat.csv', delimiter = ";")
-X1 = dataset1.iloc[:, :-1].values
-y1 = dataset1[:, -1].values
-X2 = dataset1.iloc[:, :-1].values
-y2 = dataset1[:, -1].values
+y1 = dataset1.iloc[:, -1].values
+y2 = dataset2.iloc[:, -1].values
+dataset1.drop(["G1", "G2", "G3"], axis = 1)
+dataset2.drop(["G1", "G2", "G3"], axis = 1)
 
 #%% Data Preprocessing
-X1.drop(["G1", "G2"], axis = 1)
-X2.drop(["G1", "G2"], axis = 1)
-
 #Label Encoder
 le = LabelEncoder()
 columns1 = ["school", "sex", "address", "famsize", "Pstatus", "schoolsup", "famsup", "paid", "activities",
            "nursery", "higher", "internet", "romantic"]
 for col in columns1:
-    X1[col] = le.fit_transform(dataset1[col])
-    X2[col] = le.transform(dataset2[col])
+    dataset1[col] = le.fit_transform(dataset1[col])
+    dataset2[col] = le.transform(dataset2[col])
 
 #OneHotEncoder
-columns2 = ["Medu", "Fedu", "Mjob", "Fjob", "reason", "guardian"]
+columns2 = ["Mjob", "Fjob", "reason", "guardian"]
 
 ct = ColumnTransformer(transformers=[('encoder', OneHotEncoder(), columns2)], remainder='passthrough')
 X1 = np.array(ct.fit_transform(dataset1))
-X2 = np.array(ct.transform(dataset2))
-
-print(dataset1)
+X2 = np.array(ct.fit_transform(dataset2))
 
 #%% Split data 
 x1_train , y1_train , x1_test , y1_test = train_test_split(X1,y1 , test_size= 0.2 , random_state= 42, shuffle=True)
