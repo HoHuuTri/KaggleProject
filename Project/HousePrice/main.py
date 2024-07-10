@@ -34,12 +34,34 @@ def CleanData(df):
     df["GarageYrBlt"] = df["GarageYrBlt"].fillna(df["GarageYrBlt"].mean())
     return df 
 X = CleanData(x)
+
 X.head()
 
 sns.heatmap(X.isnull() , yticklabels=False, cbar=False)
+collums = ["MSZoning","Street","LotShape","LandContour","Utilities","LotConfig","LandSlope",'Neighborhood',"Condition1"
+           ,"Condition2","BldgType","HouseStyle","RoofStyle","RoofMatl","Exterior1st","Exterior2nd","ExterQual"
+           ,"ExterCond","Foundation","BsmtQual","BsmtCond","BsmtExposure","BsmtFinType1","BsmtFinType2","Heating"
+           ,"HeatingQC","CentralAir","Electrical","KitchenQual","Functional","GarageType","GarageFinish","GarageQual"
+           ,"GarageCond","PavedDrive","SaleType","SaleCondition"]
+
+def Catagory_onehot_multcols(multcolums,df):
+    df_final=df 
+    i=0 
+    for fields in multcolums:
+        df1 = pd.get_dummies(df[fields],drop_first=True)
+        df.drop([fields],axis = 1 , inplace = True)
+        if i ==0:
+            df_final = df1.copy()
+        else:
+            df_final = pd.concat([df_final,df1] , axis= 1)
+    df_final = pd.concat([df,df_final] , axis= 1) 
+    return df_final
+Catagory_onehot_multcols(collums , X)
+X.head()
 
 #%% Check For Data
 X["GarageCond"].value_counts()
+X.info()
 
 # %% Check For Abnormal data
 
