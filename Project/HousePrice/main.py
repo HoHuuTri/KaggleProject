@@ -41,6 +41,7 @@ sns.heatmap(X.isnull() , yticklabels=False, cbar=False)
 #%% Check For Data
 X["GarageCond"].value_counts()
 
+# %% Check For Abnormal data
 
 # %% Split Training and Test (80/20)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
