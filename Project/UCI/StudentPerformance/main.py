@@ -11,6 +11,8 @@ from sklearn.svm import SVR
 from sklearn.metrics import r2_score
 import seaborn as sns
 #%% Split data 
+X = dataset1.drop("G3")
+y = dataset1["G3"]
 x_train , y_train , x_test , y_test = train_test_split(X,y , test_size= 0.2 , random_state= 42, shuffle=True)
 
 #%% Random Forest
