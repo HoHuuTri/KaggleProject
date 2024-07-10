@@ -48,7 +48,6 @@ test.drop(['GarageYrBlt'],axis=1,inplace=True)
 test['GarageFinish']=test['GarageFinish'].fillna(test['GarageFinish'].mode()[0])
 test['GarageQual']=test['GarageQual'].fillna(test['GarageQual'].mode()[0])
 test['GarageCond']=test['GarageCond'].fillna(test['GarageCond'].mode()[0])
-
 test.drop(['PoolQC','Fence','MiscFeature'],axis=1,inplace=True)
 test.drop(['Id'],axis=1,inplace=True)
 test['MasVnrType']=test['MasVnrType'].fillna(test['MasVnrType'].mode()[0])
@@ -122,4 +121,3 @@ arr = pd.DataFrame(test2["Id"] )
 Predictions = pd.DataFrame(Predictions)
 arr["SalePrice"] = Predictions
 arr.to_csv("submission.csv" , index= False)
-# %%
