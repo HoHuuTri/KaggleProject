@@ -17,9 +17,6 @@ y.info()
 # %% Check For Abnormal data
 
 
-#im testing how to merge github
-
-
 # %% Clean Data
 def CleanData(data):
     data = data[["YearBuilt","OverallQual","OverallCond","1stFlrSF","2ndFlrSF","MSZoning","LotArea"
@@ -29,24 +26,7 @@ def CleanData(data):
 X = CleanData(x)
 X.head()
 X.info()
-#baka
-#test2
-#test3
-#test4
-#test5
-#test6
-#test7
-#test8
-#test9
-#test10
-#test11
-#test12
-#test13
-#test14
-#test15
-#test16
-#test17
-#
+
 # %% Split Training and Test (80/20)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
