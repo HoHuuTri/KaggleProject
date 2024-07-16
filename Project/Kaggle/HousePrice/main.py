@@ -114,10 +114,11 @@ X_train=X_Train.drop(['SalePrice'],axis=1)
 y_train = X_Train['SalePrice']
 
 # %% Training Random Forest Regressor and Output
-RFG = RandomForestRegressor(n_estimators = 8) # Change n_estimators to fit the model.
+RFG = RandomForestRegressor(n_estimators = 111, max_features = 9) # Change n_estimators to fit the model.
 RFG.fit(X_train, y_train)
 Predictions = RFG.predict(X_Test)
 arr = pd.DataFrame(test2["Id"] )
 Predictions = pd.DataFrame(Predictions)
 arr["SalePrice"] = Predictions
 arr.to_csv("submission.csv" , index= False)
+# %%
