@@ -39,43 +39,45 @@ X1 = np.array(ct.fit_transform(dataset1))
 X2 = np.array(ct.fit_transform(dataset2))
 
 #%% Split data 
-x1_train , y1_train , x1_test , y1_test = train_test_split(X1,y1 , test_size= 0.2 , random_state= 42, shuffle=True)
-x2_train , y2_train , x2_test , y2_test = train_test_split(X2,y2 , test_size= 0.2 , random_state= 42, shuffle=True)
+x1_train , x1_test , y1_train , y1_test = train_test_split(X1,y1 , test_size= 0.2 , random_state= 42,shuffle=True)
+x2_train , x2_test , y2_train , y2_test = train_test_split(X2,y2 , test_size= 0.2 , random_state= 42, shuffle=True)
 
 #%% Random Forest
 from sklearn.ensemble import RandomForestRegressor
-RFR = RandomForestRegressor(n_estimators=100,random_state=69,criterion="squared_error",max_depth=10)
-RFR.fit(x_train,y_train)
-r2_score(y_test , RFR.predict(x_test))
+RFR = RandomForestRegressor(n_estimators=100,max_depth=10)
+RFR.fit(x1_train,y1_train)
+r2_score(y1_test , RFR.predict(x1_test))
 
 #%% Decision Tree
 from sklearn.tree import DecisionTreeRegressor
 DTR = DecisionTreeRegressor(criterion="squared_error", random_state=69)
-DTR.fit(x_train,y_train)
-r2_score(y_test, DTR.predict(x_test))
+DTR.fit(x1_train,y1_train)
+r2_score(y1_test, DTR.predict(x1_test))
 
 #%% Linear Regression
 from sklearn.linear_model import LinearRegression
 LR = LinearRegression()
-LR.fit(x_train , y_train)
-r2_score(y_test , LR.predict(x_test))
+LR.fit(x1_train , y1_train)
+r2_score(y1_test , LR.predict(x1_test))
 #%% Polynomial Features Regression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 PolyReg = PolynomialFeatures(degree=3)
-X_Poly = PolyReg.fit_transform(x_train)
+X_Poly = PolyReg.fit_transform(x1_train)
 LR = LinearRegression()
-LinearRegression.fit(X_Poly , y_train)
-r2_score(y_test , LR.predict(PolyReg.transform(x_test)))
+LR.fit(X_Poly , y1_train)
+r2_score(y1_test , LR.predict(PolyReg.transform(x1_test)))
 
 #%% Data Scaling 
-sc= StandardScaler()
-x_train = sc.fit_transform(x_train)
-x_test = sc.transform(x_test)
-y_train = sc.fit_transform(y_train)
-y_test = sc.transform(y_test)
+from sklearn.preprocessing import StandardScaler
+sc_X = StandardScaler()
+sc_y = StandardScaler()
+X_train = sc_X.fit_transform(x1_train.reshape(-1, 1))
+y_train = sc_y.fit_transform(y1_train.reshape(-1, 1))
 #%% SVM
 from sklearn.svm import SVR
 SupportVR = SVR(kernel="rbf")
-SupportVR.fit(x_train , y_train)
-r2_score(y_test,SupportVR.predict(x_test))
+SupportVR.fit(X_train , y_train)
+r2_score(y1_test,SupportVR.predict(sc_X.transform(x1_test)))
+# %% test
+r2_score(y2_test,LR.predict(x2_test))
